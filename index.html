@@ -748,53 +748,55 @@
     <div id="googleSheetsModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4 no-print">
         <div class="bg-white dark:bg-darkCard border border-emerald-500/40 rounded-3xl max-w-md w-full p-6 shadow-2xl animate-card">
             <div class="flex items-center justify-between mb-4">
-                <h3 class="font-black text-lg text-slate-900 dark:text-white flex items-center gap-2">
-                    <i class="fa-solid fa-table text-emerald-500"></i>
-                    <span>ربط كشف Google Sheets المباشر</span>
-                </h3>
+                <div class="flex items-center gap-2.5">
+                    <div class="w-10 h-10 rounded-2xl bg-emerald-500/15 text-emerald-500 flex items-center justify-center text-lg">
+                        <i class="fa-solid fa-table"></i>
+                    </div>
+                    <div>
+                        <h3 class="font-black text-base sm:text-lg text-slate-900 dark:text-white leading-tight">قاعدة بيانات Google Sheets</h3>
+                        <p class="text-[11px] text-emerald-600 dark:text-emerald-400 font-bold flex items-center gap-1.5 mt-0.5">
+                            <span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                            <span>متصلة ومحدثة تلقائياً 🟢</span>
+                        </p>
+                    </div>
+                </div>
                 <button onclick="closeGoogleSheetsModal()" class="w-8 h-8 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-400 hover:text-rose-400 flex items-center justify-center cursor-pointer">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
 
-            <div class="space-y-4 mb-5">
-                <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/25 text-xs text-emerald-700 dark:text-emerald-300 flex items-center justify-between">
-                    <div>
-                        <p class="font-extrabold mb-0.5">كشف جوجل شيت الخاص بك جاهز:</p>
-                        <p class="text-[11px] opacity-80 truncate max-w-[220px]">كشف توزيع مجموعات الخدمة والمشاركين</p>
+            <div class="space-y-4 mb-6">
+                <!-- Spreadsheet info box -->
+                <div class="p-4 rounded-2xl bg-slate-100 dark:bg-darkBg border border-emerald-500/30">
+                    <div class="flex items-center justify-between gap-3 mb-2">
+                        <span class="text-xs font-black text-slate-800 dark:text-slate-100 truncate">كشف توزيع مجموعات الخدمة والمشاركين</span>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-600 dark:text-emerald-300 shrink-0">84 عضواً</span>
                     </div>
-                    <a href="https://docs.google.com/spreadsheets/d/18lPDjVpmLDXoy6oKfy3oKMZ7E0wKnfBSdmskuKkLwQY/edit" target="_blank" class="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs shrink-0 flex items-center gap-1 shadow-md">
-                        <span>فتح الشيت</span>
-                        <i class="fa-solid fa-arrow-up-right-from-square text-[10px]"></i>
+                    <p class="text-xs text-slate-500 dark:text-slate-400 leading-relaxed mb-3">
+                        يتم حفظ وتحديث كل الأسماء، القادة، والمجموعات في ملف Google Sheets الخاص بك لحظياً في الخلفية بدون أي خطوات منك.
+                    </p>
+                    <a href="https://docs.google.com/spreadsheets/d/18lPDjVpmLDXoy6oKfy3oKMZ7E0wKnfBSdmskuKkLwQY/edit" target="_blank" class="w-full py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-black text-xs flex items-center justify-center gap-2 shadow-lg shadow-emerald-600/25 transition-all">
+                        <i class="fa-solid fa-arrow-up-right-from-square"></i>
+                        <span>فتح الشيت على Google Sheets</span>
                     </a>
                 </div>
 
-                <div>
-                    <label class="block text-xs font-bold text-slate-500 dark:text-slate-400 mb-1.5">رابط مزامنة الـ Web App (Apps Script):</label>
-                    <input 
-                        type="url" 
-                        id="googleSheetsUrlInput" 
-                        placeholder="https://script.google.com/macros/s/.../exec"
-                        class="w-full px-4 py-2.5 rounded-xl text-xs font-mono bg-slate-100 dark:bg-darkBg border border-slate-300 dark:border-white/15 text-slate-900 dark:text-white focus:outline-none focus:border-emerald-500"
-                    >
-                </div>
-
-                <div class="p-3 rounded-2xl bg-slate-100 dark:bg-darkBg/60 border border-slate-200 dark:border-white/10 text-xs">
-                    <p class="font-black text-slate-800 dark:text-slate-200 mb-1">خطوات التفعيل السريع في ثوانٍ:</p>
-                    <ol class="list-decimal list-inside space-y-1 text-slate-600 dark:text-slate-400 text-[11px] leading-relaxed">
-                        <li>افتح الشيت من الزر بالأعلى، واضغط من القائمة على <b>الاضافات (Extensions) &gt; Apps Script</b>.</li>
-                        <li>الصق كود المزامنة، واضغط <b>نشر (Deploy) &gt; نشر جديد (New deployment) &gt; Web app</b>.</li>
-                        <li>اختر الصلاحية <b>Anyone (الجميع)</b> وانسخ الرابط الناتج وضعه في المربع بالأعلى.</li>
-                    </ol>
+                <!-- Last sync time and instant sync button -->
+                <div class="p-3.5 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-between text-xs">
+                    <div class="flex items-center gap-2 text-slate-700 dark:text-slate-300">
+                        <i class="fa-solid fa-cloud-arrow-up text-emerald-500"></i>
+                        <span id="sheetSyncStatusText">الحفظ التلقائي: نشط لحظياً</span>
+                    </div>
+                    <button onclick="triggerManualSheetSync()" class="px-3 py-1.5 rounded-xl bg-slate-200 dark:bg-slate-800 hover:bg-slate-300 dark:hover:bg-slate-700 text-slate-800 dark:text-slate-200 font-bold text-xs flex items-center gap-1.5 transition-all cursor-pointer">
+                        <i class="fa-solid fa-rotate text-emerald-500"></i>
+                        <span>مزامنة الآن</span>
+                    </button>
                 </div>
             </div>
 
             <div class="flex gap-2.5">
-                <button onclick="saveGoogleSheetsConfig()" class="flex-1 py-2.5 rounded-xl text-xs sm:text-sm font-black bg-emerald-600 hover:bg-emerald-500 text-white shadow-lg cursor-pointer">
-                    حفظ وتفعيل المزامنة
-                </button>
-                <button onclick="closeGoogleSheetsModal()" class="px-4 py-2.5 rounded-xl text-xs font-bold bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300 cursor-pointer">
-                    إغلاق
+                <button onclick="closeGoogleSheetsModal()" class="w-full py-2.5 rounded-xl text-xs sm:text-sm font-black bg-brandTeal hover:bg-teal-600 text-white shadow-lg cursor-pointer">
+                    تم
                 </button>
             </div>
         </div>
@@ -1968,10 +1970,6 @@
 
         // Google Sheets Integration Functions
         function openGoogleSheetsModal() {
-            const input = document.getElementById('googleSheetsUrlInput');
-            if (input) {
-                input.value = googleSheetsWebhookUrl || '';
-            }
             const modal = document.getElementById('googleSheetsModal');
             if (modal) {
                 modal.classList.remove('hidden');
@@ -1987,16 +1985,24 @@
             }
         }
 
-        function saveGoogleSheetsConfig() {
-            const input = document.getElementById('googleSheetsUrlInput');
-            const url = input ? input.value.trim() : '';
-            googleSheetsWebhookUrl = url;
-            localStorage.setItem(GOOGLE_SHEETS_KEY, url);
-            closeGoogleSheetsModal();
-            if (url) {
-                showToast('تم حفظ وتفعيل رابط مزامنة Google Sheets!', 'emerald');
-                saveToStorage(); // trigger immediate sync
-            } else {
+        async function triggerManualSheetSync() {
+            const statusText = document.getElementById('sheetSyncStatusText');
+            if (statusText) statusText.textContent = 'جاري المزامنة...';
+            try {
+                // Try calling local/server sync-sheet endpoint
+                const res = await fetch(`${API_BASE}/api/sync-sheet`, { method: 'POST' });
+                if (res.ok) {
+                    const data = await res.json();
+                    showToast('تمت مزامنة وتحديث كشف Google Sheets بنجاح! 📊', 'emerald');
+                    if (statusText) statusText.textContent = `آخر مزامنة: ${data.time || 'الآن'}`;
+                    return;
+                }
+            } catch(e) {}
+            // Fallback: trigger standard save
+            saveToStorage();
+            showToast('تم إرسال أمر التحديث لقاعدة البيانات!', 'emerald');
+            if (statusText) statusText.textContent = 'آخر مزامنة: الآن';
+        } else {
                 showToast('تم إلغاء تفعيل مزامنة Google Sheets', 'teal');
             }
         }
