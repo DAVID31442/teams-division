@@ -303,6 +303,12 @@
                         <span class="hidden sm:inline">نسخ للواتساب</span>
                     </button>
 
+                    <!-- 2.1 مشاركة الرابط المباشر للمشاركة مع الجميع -->
+                    <button onclick="shareLiveLink()" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl font-bold text-xs sm:text-sm bg-sky-600 hover:bg-sky-500 text-white shadow-md shadow-sky-600/20 active:scale-95 transition-all cursor-pointer" title="نسخ رابط التوزيعة الحية لمشاركته مع أي شخص للتعديل">
+                        <i class="fa-solid fa-share-nodes text-sm"></i>
+                        <span class="hidden sm:inline">مشاركة الرابط 🔗</span>
+                    </button>
+
                     <!-- 3. لوحة النقاط -->
                     <a href="Scoreboard.html" target="_blank" class="inline-flex items-center gap-2 px-3.5 sm:px-4 py-2.5 rounded-2xl font-bold text-xs sm:text-sm bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-md shadow-amber-500/20 active:scale-95 transition-all cursor-pointer" title="فتح لوحة تسجيل نقاط المسابقات والألعاب">
                         <i class="fa-solid fa-trophy text-sm"></i>
@@ -1082,6 +1088,71 @@
             }
         }
 
+        
+        // Cloud Real-Time Database (Supabase) for Global Live Collaboration
+        const SUPABASE_URL = 'https://vtkoplsxbodcbwnheruu.supabase.co';
+        const SUPABASE_ANON = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZ0a29wbHN4Ym9kY2J3bmhlcnV1Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODk2NjAyMzYsImV4cCI6MjEwNTIzNjIzNn0.fVwMsWtrg8vTm5OZohOCESzvKmiJbamyqo4DiFOPk-M';
+        const GIST_RAW_URL = 'https://gist.githubusercontent.com/DAVID31442/1cca3d3f3a810584674f1a4f96ae51ad/raw/teams_data.json';
+
+        let lastCloudSaveTime = 0;
+        async function syncToSupabase(payload) {
+            try {
+                lastCloudSaveTime = Date.now();
+                await fetch(`${SUPABASE_URL}/rest/v1/teams_state`, {
+                    method: 'POST',
+                    headers: {
+                        'apikey': SUPABASE_ANON,
+                        'Authorization': `Bearer ${SUPABASE_ANON}`,
+                        'Content-Type': 'application/json',
+                        'Prefer': 'resolution=merge-duplicates'
+                    },
+                    body: JSON.stringify({ id: 'current', state: payload })
+                });
+                console.log('✅ Synchronized state to Supabase Cloud Database');
+            } catch(e) {}
+        }
+
+        async function fetchFromSupabase() {
+            try {
+                const res = await fetch(`${SUPABASE_URL}/rest/v1/teams_state?id=eq.current&select=state`, {
+                    headers: {
+                        'apikey': SUPABASE_ANON,
+                        'Authorization': `Bearer ${SUPABASE_ANON}`
+                    },
+                    cache: 'no-store'
+                });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data[0] && data[0].state && Array.isArray(data[0].state.groups) && data[0].state.groups.length >= 2) {
+                        return data[0].state;
+                    }
+                }
+            } catch(e) {}
+            return null;
+        }
+
+        function getShareableUrl() {
+            const minState = {
+                g: groups.map(group => group.map(m => [m.id, m.name, m.locked ? 1 : 0])),
+                t: GROUP_META.map(m => m.title),
+                e: GROUP_META.map(m => m.emoji)
+            };
+            const json = JSON.stringify(minState);
+            const b64 = encodeURIComponent(btoa(unescape(encodeURIComponent(json))));
+            const baseUrl = window.location.origin + window.location.pathname;
+            return `${baseUrl}#share=${b64}`;
+        }
+
+        function shareLiveLink() {
+            try {
+                const url = getShareableUrl();
+                copyTextToClipboard(url, 'تم نسخ رابط التوزيعة الحية بنجاح! 🔗 شاركه مع أي شخص ليفتح ويعدل نفس التوزيعة مباشرة');
+            } catch (err) {
+                console.error('Share link error:', err);
+                showToast('حدث خطأ أثناء نسخ الرابط، يرجى المحاولة مرة أخرى', 'rose');
+            }
+        }
+
         const API_BASE = window.location.origin.includes('localhost:8080')
             ? 'http://localhost:8080'
             : (window.location.protocol === 'file:' ? 'http://localhost:8080' : '');
@@ -1130,6 +1201,7 @@
 
                 // 4. Sync to Google Sheets if configured
                 syncToGoogleSheets(payload);
+                syncToSupabase(payload);
             } catch (e) {
                 // Ignore storage quota errors
             }
@@ -2760,25 +2832,70 @@
         async function initApp() {
             let loaded = false;
 
-            // 1. First priority: try server / API endpoint (Vercel or local server)
-            try {
-                const res = await fetch(`${API_BASE}/api/state`, { cache: 'no-store' });
-                if (res.ok) {
-                    const data = await res.json();
-                    if (data && data.exists !== false && Array.isArray(data.groups) && data.groups.length >= 2) {
-                        applyLoadedData(data);
-                        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                        loaded = true;
+            // 0. Priority 0: URL Hash Shared Link (#share=...)
+            if (window.location.hash && window.location.hash.includes('share=')) {
+                try {
+                    const hashMatch = window.location.hash.match(/share=([^&]+)/);
+                    if (hashMatch && hashMatch[1]) {
+                        const b64 = decodeURIComponent(hashMatch[1]);
+                        const jsonStr = decodeURIComponent(escape(atob(b64)));
+                        const shared = JSON.parse(jsonStr);
+                        if (shared && Array.isArray(shared.g)) {
+                            const reconstructedGroups = shared.g.map(group => group.map(item => ({
+                                id: item[0],
+                                name: item[1],
+                                locked: item[2] === 1
+                            })));
+                            const reconstructedTitles = shared.t;
+                            const reconstructedEmojis = shared.e;
+                            applyLoadedData({
+                                groups: reconstructedGroups,
+                                customTitles: reconstructedTitles,
+                                customEmojis: reconstructedEmojis
+                            });
+                            saveToStorage();
+                            showToast('تم تحميل التوزيعة المشتركة عبر الرابط بنجاح! 🔗', 'emerald');
+                            loaded = true;
+                            history.replaceState(null, null, window.location.pathname);
+                        }
                     }
+                } catch (e) {
+                    console.error('Error parsing shared URL hash:', e);
                 }
-            } catch (err) {}
+            }
 
-            // 2. Second priority: Browser LocalStorage
+            // 1. Priority 1: Supabase Cloud Database (Global 24/7 sync between all users)
+            if (!loaded) {
+                const cloudData = await fetchFromSupabase();
+                if (cloudData) {
+                    applyLoadedData(cloudData);
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify(cloudData));
+                    loaded = true;
+                    console.log('Loaded state from Supabase Cloud Database');
+                }
+            }
+
+            // 2. Priority 2: Local server endpoint (if running on localhost)
+            if (!loaded && API_BASE) {
+                try {
+                    const res = await fetch(`${API_BASE}/api/state`, { cache: 'no-store' });
+                    if (res.ok) {
+                        const data = await res.json();
+                        if (data && data.exists !== false && Array.isArray(data.groups) && data.groups.length >= 2) {
+                            applyLoadedData(data);
+                            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                            loaded = true;
+                        }
+                    }
+                } catch (err) {}
+            }
+
+            // 3. Priority 3: Browser LocalStorage
             if (!loaded) {
                 loaded = loadFromStorage();
             }
 
-            // 3. Fallback: load Embedded Master Data (contains all 84 members)
+            // 4. Fallback: Embedded Master Data (contains all 84 members)
             if (!loaded) {
                 applyLoadedData(EMBEDDED_MASTER_DATA);
                 saveToStorage();
@@ -2786,6 +2903,25 @@
 
             renderGroups();
             updateSaveIndicator();
+
+            // Background Real-Time Polling: Check for updates made by other collaborators every 12 seconds
+            setInterval(async () => {
+                // Only poll if user hasn't made local edits in last 10 seconds
+                if (Date.now() - lastCloudSaveTime > 10000) {
+                    const latestCloud = await fetchFromSupabase();
+                    if (latestCloud && Array.isArray(latestCloud.groups)) {
+                        const localRaw = localStorage.getItem(STORAGE_KEY);
+                        const cloudRaw = JSON.stringify(latestCloud);
+                        if (localRaw !== cloudRaw) {
+                            console.log('Detected update from collaborator. Updating view...');
+                            applyLoadedData(latestCloud);
+                            localStorage.setItem(STORAGE_KEY, cloudRaw);
+                            renderGroups();
+                            updateSaveIndicator();
+                        }
+                    }
+                }
+            }, 12000);
         }
 
         window.onload = function () {
