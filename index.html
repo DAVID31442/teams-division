@@ -1065,6 +1065,7 @@
         let GROUP_META = PRESET_GROUP_META.slice(0, 4);
         let groups = [[], [], [], []];
         let pendingDeleteGroupIndex = null;
+        let pendingDuplicateConfirm = null;
         let nextId = 1;
         let currentMoveTarget = null;
         let currentEditTarget = null;
@@ -1719,10 +1720,28 @@
             let minLen = Infinity;
             let candidates = [];
             for (let g = 0; g < groups.length; g++) {
+                if (groups[g].length < minLen) {
+                    minLen = groups[g].length;
+                    candidates = [g];
+                } else if (groups[g].length === minLen) {
+                    candidates.push(g);
+                }
+            }
+            return candidates.length > 0 ? candidates[Math.floor(Math.random() * candidates.length)] : 0;
+        }
+
+        function findDuplicateMember(name, excludeMemberId = null) {
+            if (!name) return null;
+            const norm = normalizeArabic(name.trim());
+            for (let g = 0; g < groups.length; g++) {
                 for (const m of groups[g]) {
                     if (excludeMemberId && m.id === excludeMemberId) continue;
                     if (normalizeArabic(m.name) === norm) {
-                        return { member: m, groupIdx: g, groupTitle: GROUP_META[g].title };
+                        return { 
+                            member: m, 
+                            groupIdx: g, 
+                            groupTitle: GROUP_META[g] ? GROUP_META[g].title : `المجموعة ${g + 1}` 
+                        };
                     }
                 }
             }
@@ -2205,13 +2224,28 @@
 
         function updateBulkDropdownOptions() {
             const sel = document.getElementById('bulkTargetGroup');
-            if (!sel) return;
-            let options = '<option value="balanced">⚡ توزيع متوازن تلقائي على كل المجموعات</option>';
-            groups.forEach((group, idx) => {
-                const meta = GROUP_META[idx];
-                options += `<option value="${idx}">إضافة الكل إلى ${meta.emoji} ${meta.title}</option>`;
-            });
-            sel.innerHTML = options;
+            if (sel) {
+                let options = '<option value="balanced">⚡ توزيع متوازن تلقائي على كل المجموعات</option>';
+                groups.forEach((group, idx) => {
+                    const meta = GROUP_META[idx];
+                    if (meta) {
+                        options += `<option value="${idx}">إضافة الكل إلى ${meta.emoji} ${meta.title}</option>`;
+                    }
+                });
+                sel.innerHTML = options;
+            }
+
+            const topSel = document.getElementById('newMemberGroup');
+            if (topSel) {
+                let topOptions = '<option value="random">⚡ توزيع تلقائي (الأقل عدداً)</option>';
+                groups.forEach((group, idx) => {
+                    const meta = GROUP_META[idx];
+                    if (meta) {
+                        topOptions += `<option value="${idx}">${meta.emoji} ${meta.title}</option>`;
+                    }
+                });
+                topSel.innerHTML = topOptions;
+            }
         }
 
         function openMoveModal(groupIdx, memberId) {
