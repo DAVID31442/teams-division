@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>توزيع المجموعات الأربعة</title>
+    <title>منصة توزيع المجموعات والفرق | إدارة ذكية وقرعة متوازنة</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Google Fonts: Cairo & IBM Plex Sans Arabic -->
@@ -276,7 +276,7 @@
                     <div>
                         <div class="flex flex-wrap items-center gap-2.5">
                             <h1 class="text-2xl sm:text-3xl font-black tracking-tight text-slate-900 dark:text-white">
-                                منصة توزيع المجموعات الأربعة
+                                منصة توزيع المجموعات والفرق
                             </h1>
                             <span id="saveBadge" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-brandTeal/20 text-brandTeal dark:text-brandTealLight border border-brandTealLight/30 transition-all">
                                 <span class="w-2 h-2 rounded-full bg-brandTealLight animate-ping" id="savePing"></span>
@@ -314,6 +314,21 @@
                         <i class="fa-solid fa-expand text-xs"></i>
                         <span class="hidden md:inline">عرض بروجكتور</span>
                     </button>
+
+                    
+                    <!-- التحكم السريع في عدد المجموعات (Dynamic Group Controller) -->
+                    <div class="inline-flex items-center bg-slate-100 dark:bg-darkElevated border border-slate-300/80 dark:border-white/10 rounded-2xl p-1 gap-1 shadow-sm">
+                        <button onclick="removeLastGroup()" class="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 hover:bg-rose-500/15 text-slate-700 dark:text-slate-300 hover:text-rose-500 flex items-center justify-center font-black transition-all cursor-pointer text-xs" title="حذف آخر مجموعة ➖">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+                        <button onclick="openGroupCountModal()" class="px-2.5 py-1 text-center cursor-pointer hover:bg-brandTeal/10 rounded-xl transition-all" title="اضغط لاختيار عدد المجموعات مباشرة">
+                            <span class="block text-[9px] text-slate-400 font-bold leading-tight">الفرق</span>
+                            <span id="groupCountDisplay" class="font-black text-xs sm:text-sm text-brandTeal dark:text-brandTealLight">4 مجموعات</span>
+                        </button>
+                        <button onclick="addNewGroup()" class="w-8 h-8 rounded-xl bg-white dark:bg-slate-800 hover:bg-emerald-500/15 text-slate-700 dark:text-slate-300 hover:text-emerald-500 flex items-center justify-center font-black transition-all cursor-pointer text-xs" title="إضافة مجموعة جديدة ➕">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+                    </div>
 
                     <!-- 5. زر مسح الكل -->
                     <button onclick="openClearAllModal()" class="inline-flex items-center gap-1.5 px-3.5 py-2.5 rounded-2xl font-bold text-xs sm:text-sm bg-rose-500/15 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 border border-rose-500/30 transition-all active:scale-95 cursor-pointer" title="مسح وتفريغ كل الأسماء للبدء بقائمة جديدة">
@@ -542,7 +557,7 @@
         </div>
 
         <!-- 4 GROUPS BENTO GRID -->
-        <main id="groupsGrid" class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-5">
+        <main id="groupsGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-5 sm:gap-6">
             <!-- Group Cards Dynamically Rendered Here -->
         </main>
 
@@ -950,7 +965,7 @@
 
         const INITIAL_POOL = [];
 
-        const DEFAULT_GROUP_META = [
+        const PRESET_GROUP_META = [
             {
                 title: 'المجموعة الأولى',
                 headerGradient: 'from-brandTeal via-teal-600 to-cyan-600',
@@ -978,12 +993,71 @@
                 cardBorder: 'border-indigo-500/30',
                 accentBadge: 'bg-indigo-500/15 text-indigo-400 border-indigo-500/30',
                 emoji: '4️⃣'
+            },
+            {
+                title: 'المجموعة الخامسة',
+                headerGradient: 'from-amber-600 via-orange-600 to-yellow-600',
+                cardBorder: 'border-amber-500/30',
+                accentBadge: 'bg-amber-500/15 text-amber-400 border-amber-500/30',
+                emoji: '5️⃣'
+            },
+            {
+                title: 'المجموعة السادسة',
+                headerGradient: 'from-rose-600 via-pink-600 to-red-600',
+                cardBorder: 'border-rose-500/30',
+                accentBadge: 'bg-rose-500/15 text-rose-400 border-rose-500/30',
+                emoji: '6️⃣'
+            },
+            {
+                title: 'المجموعة السابعة',
+                headerGradient: 'from-purple-600 via-fuchsia-600 to-pink-600',
+                cardBorder: 'border-purple-500/30',
+                accentBadge: 'bg-purple-500/15 text-purple-400 border-purple-500/30',
+                emoji: '7️⃣'
+            },
+            {
+                title: 'المجموعة الثامنة',
+                headerGradient: 'from-cyan-600 via-teal-600 to-emerald-600',
+                cardBorder: 'border-cyan-500/30',
+                accentBadge: 'bg-cyan-500/15 text-cyan-400 border-cyan-500/30',
+                emoji: '8️⃣'
+            },
+            {
+                title: 'المجموعة التاسعة',
+                headerGradient: 'from-lime-600 via-emerald-600 to-green-700',
+                cardBorder: 'border-lime-500/30',
+                accentBadge: 'bg-lime-500/15 text-lime-400 border-lime-500/30',
+                emoji: '9️⃣'
+            },
+            {
+                title: 'المجموعة العاشرة',
+                headerGradient: 'from-blue-600 via-indigo-600 to-violet-700',
+                cardBorder: 'border-blue-500/30',
+                accentBadge: 'bg-blue-500/15 text-blue-400 border-blue-500/30',
+                emoji: '🔟'
+            },
+            {
+                title: 'المجموعة الحادية عشرة',
+                headerGradient: 'from-fuchsia-600 via-rose-600 to-pink-700',
+                cardBorder: 'border-fuchsia-500/30',
+                accentBadge: 'bg-fuchsia-500/15 text-fuchsia-400 border-fuchsia-500/30',
+                emoji: '1️⃣1️⃣'
+            },
+            {
+                title: 'المجموعة الثانية عشرة',
+                headerGradient: 'from-orange-600 via-red-600 to-rose-700',
+                cardBorder: 'border-orange-500/30',
+                accentBadge: 'bg-orange-500/15 text-orange-400 border-orange-500/30',
+                emoji: '1️⃣2️⃣'
             }
         ];
 
-        let GROUP_META = JSON.parse(JSON.stringify(DEFAULT_GROUP_META));
+        // Embedded initial master data for instant zero-server rendering
+        const EMBEDDED_MASTER_DATA = {"groups":[[{"id":3,"name":"ماريا مجدي","locked":false},{"id":8,"name":"يوستينا نبيل","locked":false},{"id":9,"name":"جيسيكا بركه","locked":false},{"id":14,"name":"ساندرا عماد","locked":false},{"id":22,"name":"مينا جوزيف","locked":false},{"id":25,"name":"يسي كميل","locked":false},{"id":30,"name":"مارفيل شنوده","locked":false},{"id":34,"name":"يوستنيا هاني","locked":false},{"id":37,"name":"كيرلس اسحاق","locked":false},{"id":42,"name":"جورج يسري","locked":false},{"id":52,"name":"مريم بولس","locked":false},{"id":54,"name":"ندي عاطف","locked":false},{"id":59,"name":"ليزا عصام","locked":false},{"id":63,"name":"كيرلس ايهاب","locked":false},{"id":67,"name":"بولا ايمن","locked":false},{"id":72,"name":"جورج ....مع مكاريوس","locked":false},{"id":76,"name":"يؤنا صحي","locked":false},{"id":77,"name":"اغابي رافت","locked":false},{"id":81,"name":"ميرنا مجدي","locked":false},{"id":18,"name":"توني حكه","locked":false},{"id":49,"name":"ميرنا حاتم","locked":false}],[{"id":1,"name":"ابرام ناصر","locked":false},{"id":6,"name":"ناردين عزت","locked":false},{"id":11,"name":"عماد ايمن","locked":false},{"id":13,"name":"دميانة سمير","locked":false},{"id":17,"name":"دينا ملك","locked":false},{"id":21,"name":"يوستينا مينا","locked":false},{"id":26,"name":"سارة نشأت","locked":false},{"id":32,"name":"رانيا عماد","locked":false},{"id":33,"name":"توني كينفال","locked":false},{"id":39,"name":"فادي جاسر","locked":false},{"id":44,"name":"دميانة ميلاد","locked":false},{"id":48,"name":"رومينا مينا","locked":false},{"id":50,"name":"كرستين سامح","locked":false},{"id":56,"name":"مريم نسيم","locked":false},{"id":60,"name":"مادونا شاكر","locked":false},{"id":61,"name":"يسي ونيس","locked":false},{"id":65,"name":"ابانوب شريف","locked":false},{"id":71,"name":"باسم .....مع مكاريوس","locked":false},{"id":75,"name":"نوسة اشرف","locked":false},{"id":80,"name":"ايلاريا غطاس","locked":false},{"id":84,"name":"روفا","locked":false}],[{"id":2,"name":"البير سامي","locked":false},{"id":7,"name":"ايريني ماجد","locked":false},{"id":12,"name":"ايريني نصر الله","locked":false},{"id":15,"name":"فادي نبيل","locked":false},{"id":20,"name":"سارة سعد","locked":false},{"id":24,"name":"كيرلس سامح","locked":false},{"id":27,"name":"بولا رأفت","locked":false},{"id":31,"name":"مينا ايليا","locked":false},{"id":36,"name":"ديفيد جرجس","locked":false},{"id":40,"name":"جاد","locked":false},{"id":41,"name":"بافلي القمص","locked":false},{"id":45,"name":"مارلين مجدي","locked":false},{"id":55,"name":"مهرائيل عماد","locked":false},{"id":58,"name":"متي عطية","locked":false},{"id":64,"name":"توماس منير","locked":false},{"id":68,"name":"كيرلس طارق","locked":false},{"id":69,"name":"بيتر سعيد","locked":false},{"id":74,"name":"نانسي زاهر","locked":false},{"id":78,"name":"يوليانة مجدي","locked":false},{"id":82,"name":"مريم مفاجأة","locked":false},{"id":47,"name":"مايفل عماد","locked":false}],[{"id":10,"name":"مارينا وليد","locked":false},{"id":4,"name":"مرثا عادل","locked":false},{"id":5,"name":"مريم عادل","locked":false},{"id":16,"name":"مكاريوس مؤنس","locked":false},{"id":19,"name":"مارينا مفرح","locked":false},{"id":23,"name":"جوسي القمص تيموثاوس","locked":false},{"id":28,"name":"مينا يوسف","locked":false},{"id":29,"name":"يؤنا ثروت","locked":false},{"id":35,"name":"كيرلس فوزي","locked":false},{"id":38,"name":"مايكل سامي","locked":false},{"id":43,"name":"فام لوقا","locked":false},{"id":46,"name":"مريم صفوت","locked":false},{"id":51,"name":"مارينا عطاالله","locked":false},{"id":53,"name":"جيسيكا امير","locked":false},{"id":57,"name":"جرجس صبحي","locked":false},{"id":62,"name":"انطونيوس ملاك","locked":false},{"id":66,"name":"لوجي مكاري","locked":false},{"id":70,"name":"جرجس علاء","locked":false},{"id":73,"name":"اردينا عادل","locked":false},{"id":79,"name":"سالي كروميل","locked":false},{"id":83,"name":"كرستينا عادل","locked":false}]],"nextId":85,"customTitles":["المجموعة الأولى","المجموعة الثانية","المجموعة الثالثة","المجموعة الرابعة"],"customEmojis":["1️⃣","2️⃣","3️⃣","4️⃣"],"hasCustomData":true,"savedAt":"2026-11-23T22:23:19.550Z"};
 
+        let GROUP_META = PRESET_GROUP_META.slice(0, 4);
         let groups = [[], [], [], []];
+        let pendingDeleteGroupIndex = null;
         let nextId = 1;
         let currentMoveTarget = null;
         let currentEditTarget = null;
@@ -1061,17 +1135,34 @@
         }
 
         function applyLoadedData(parsed) {
-            if (!parsed || !Array.isArray(parsed.groups) || parsed.groups.length !== 4) return false;
+            if (!parsed || !Array.isArray(parsed.groups) || parsed.groups.length === 0) return false;
             groups = parsed.groups;
-            nextId = parsed.nextId || 200;
-            if (Array.isArray(parsed.customTitles) && parsed.customTitles.length === 4) {
+            nextId = parsed.nextId || 300;
+
+            // Ensure GROUP_META has exact matching length
+            while (GROUP_META.length < groups.length) {
+                const idx = GROUP_META.length;
+                const preset = PRESET_GROUP_META[idx] || {
+                    title: `المجموعة ${idx + 1}`,
+                    headerGradient: 'from-teal-600 via-cyan-600 to-blue-600',
+                    cardBorder: 'border-teal-500/30',
+                    accentBadge: 'bg-teal-500/15 text-teal-400 border-teal-500/30',
+                    emoji: `${idx + 1}️⃣`
+                };
+                GROUP_META.push(JSON.parse(JSON.stringify(preset)));
+            }
+            if (GROUP_META.length > groups.length) {
+                GROUP_META = GROUP_META.slice(0, groups.length);
+            }
+
+            if (Array.isArray(parsed.customTitles)) {
                 parsed.customTitles.forEach((title, idx) => {
-                    if (title) GROUP_META[idx].title = title;
+                    if (title && GROUP_META[idx]) GROUP_META[idx].title = title;
                 });
             }
-            if (Array.isArray(parsed.customEmojis) && parsed.customEmojis.length === 4) {
+            if (Array.isArray(parsed.customEmojis)) {
                 parsed.customEmojis.forEach((emoji, idx) => {
-                    if (emoji) GROUP_META[idx].emoji = emoji;
+                    if (emoji && GROUP_META[idx]) GROUP_META[idx].emoji = emoji;
                 });
             }
             return true;
@@ -1242,10 +1333,11 @@
             // Save state snapshot for undo
             previousShuffleSnapshot = JSON.parse(JSON.stringify(groups));
 
+            const numGroups = groups.length;
             const unlockedPool = [];
-            const lockedPerGroup = [[], [], [], []];
+            const lockedPerGroup = Array.from({ length: numGroups }, () => []);
 
-            for (let g = 0; g < 4; g++) {
+            for (let g = 0; g < numGroups; g++) {
                 groups[g].forEach(member => {
                     if (member.locked) {
                         lockedPerGroup[g].push(member);
@@ -1260,7 +1352,7 @@
 
             shuffledUnlocked.forEach(member => {
                 let minGroupIdx = 0;
-                for (let g = 1; g < 4; g++) {
+                for (let g = 1; g < numGroups; g++) {
                     if (groups[g].length < groups[minGroupIdx].length) {
                         minGroupIdx = g;
                     }
@@ -1456,6 +1548,14 @@
                                     >
                                         <i class="fa-regular fa-copy text-xs"></i>
                                     </button>
+                                    ${groups.length > 2 ? `
+                                    <button 
+                                        onclick="deleteSpecificGroup(${groupIdx})" 
+                                        class="w-8 h-8 rounded-xl bg-rose-500/20 hover:bg-rose-500/50 text-white flex items-center justify-center transition-all active:scale-90 cursor-pointer no-print no-projector"
+                                        title="حذف ${meta.title}"
+                                    >
+                                        <i class="fa-solid fa-trash-can text-xs"></i>
+                                    </button>` : ''}
                                 </div>
                             </div>
 
@@ -1545,26 +1645,7 @@
         function getSmallestGroupIndex() {
             let minLen = Infinity;
             let candidates = [];
-            for (let g = 0; g < 4; g++) {
-                if (groups[g].length < minLen) {
-                    minLen = groups[g].length;
-                    candidates = [g];
-                } else if (groups[g].length === minLen) {
-                    candidates.push(g);
-                }
-            }
-            return candidates[Math.floor(Math.random() * candidates.length)];
-        }
-
-        // ==========================================
-        // DUPLICATE DETECTION HELPERS
-        // ==========================================
-        let pendingDuplicateConfirm = null;
-
-        function findDuplicateMember(name, excludeMemberId = null) {
-            const norm = normalizeArabic(name);
-            if (!norm) return null;
-            for (let g = 0; g < 4; g++) {
+            for (let g = 0; g < groups.length; g++) {
                 for (const m of groups[g]) {
                     if (excludeMemberId && m.id === excludeMemberId) continue;
                     if (normalizeArabic(m.name) === norm) {
@@ -1864,6 +1945,202 @@
         }
 
         // Move Member Modal
+        
+        // ==========================================
+        // DYNAMIC GROUP MANAGEMENT (ADD / REMOVE / RESIZE)
+        // ==========================================
+        function updateGroupCountWidget() {
+            const display = document.getElementById('groupCountDisplay');
+            if (display) {
+                display.textContent = `${groups.length} مجموعات`;
+            }
+            updateBulkDropdownOptions();
+        }
+
+        function addNewGroup() {
+            if (groups.length >= 16) {
+                showToast('الحد الأقصى المسموح به هو 16 مجموعة', 'rose');
+                return;
+            }
+            const newIdx = groups.length;
+            const preset = PRESET_GROUP_META[newIdx] || {
+                title: `المجموعة ${newIdx + 1}`,
+                headerGradient: 'from-teal-600 via-cyan-600 to-blue-600',
+                cardBorder: 'border-teal-500/30',
+                accentBadge: 'bg-teal-500/15 text-teal-400 border-teal-500/30',
+                emoji: `${newIdx + 1}️⃣`
+            };
+            GROUP_META.push(JSON.parse(JSON.stringify(preset)));
+            groups.push([]);
+
+            saveToStorage();
+            renderGroups();
+            showToast(`تمت إضافة ${preset.emoji} ${preset.title} بنجاح! ➕`, 'emerald');
+        }
+
+        function removeLastGroup() {
+            if (groups.length <= 2) {
+                showToast('الحد الأدنى هو مجموعتان لتوزيع الفرق', 'amber');
+                return;
+            }
+            deleteSpecificGroup(groups.length - 1);
+        }
+
+        function deleteSpecificGroup(groupIdx) {
+            if (groups.length <= 2) {
+                showToast('الحد الأدنى هو مجموعتان لتوزيع الفرق', 'amber');
+                return;
+            }
+            const targetGroup = groups[groupIdx];
+            const meta = GROUP_META[groupIdx];
+
+            if (targetGroup && targetGroup.length > 0) {
+                pendingDeleteGroupIndex = groupIdx;
+                const modal = document.getElementById('confirmDeleteGroupModal');
+                const titleEl = document.getElementById('deleteGroupModalTitle');
+                const msgEl = document.getElementById('deleteGroupModalMessage');
+                if (titleEl) titleEl.textContent = `حذف ${meta.title} (${meta.emoji})`;
+                if (msgEl) msgEl.innerHTML = `تحتوي هذه المجموعة على <b>${targetGroup.length} عضو</b>.<br>ماذا ترغب أن تفعل بأعضائها؟`;
+                if (modal) {
+                    modal.classList.remove('hidden');
+                    modal.classList.add('flex');
+                }
+                return;
+            }
+
+            // Group is already empty, delete immediately
+            executeGroupDeletion(groupIdx, 'none');
+        }
+
+        function closeDeleteGroupModal() {
+            const modal = document.getElementById('confirmDeleteGroupModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+            pendingDeleteGroupIndex = null;
+        }
+
+        function confirmDeleteGroupAction(mode) {
+            if (pendingDeleteGroupIndex === null) return;
+            executeGroupDeletion(pendingDeleteGroupIndex, mode);
+            closeDeleteGroupModal();
+        }
+
+        function executeGroupDeletion(groupIdx, mode) {
+            const removedMembers = groups[groupIdx] || [];
+            groups.splice(groupIdx, 1);
+            GROUP_META.splice(groupIdx, 1);
+
+            if (mode === 'redistribute' && removedMembers.length > 0) {
+                // Distribute evenly across remaining groups
+                removedMembers.forEach(member => {
+                    let minGroupIdx = 0;
+                    for (let g = 1; g < groups.length; g++) {
+                        if (groups[g].length < groups[minGroupIdx].length) {
+                            minGroupIdx = g;
+                        }
+                    }
+                    groups[minGroupIdx].push(member);
+                });
+                showToast('تم حذف المجموعة وتوزيع أعضائها على باقي الفرق بالتساوي! 🔄', 'emerald');
+            } else if (mode === 'delete') {
+                showToast('تم حذف المجموعة وأعضائها نهائياً', 'rose');
+            } else {
+                showToast('تم حذف المجموعة بنجاح ➖', 'teal');
+            }
+
+            saveToStorage();
+            renderGroups();
+        }
+
+        // Group Count Preset Modal
+        function openGroupCountModal() {
+            const modal = document.getElementById('groupCountModal');
+            const container = document.getElementById('groupCountPresets');
+            const customInput = document.getElementById('customCountInput');
+            if (customInput) customInput.value = groups.length;
+
+            if (container) {
+                const presets = [2, 3, 4, 5, 6, 7, 8, 10];
+                container.innerHTML = presets.map(num => `
+                    <button onclick="setExactGroupCount(${num})" class="py-2.5 px-1.5 rounded-xl text-xs font-black transition-all cursor-pointer ${groups.length === num ? 'bg-brandTeal text-white shadow-lg ring-2 ring-brandTealLight' : 'bg-slate-100 dark:bg-darkBg hover:bg-slate-200 dark:hover:bg-slate-800 text-slate-800 dark:text-slate-200 border border-slate-200 dark:border-white/10'}">
+                        ${num} فرق
+                    </button>
+                `).join('');
+            }
+
+            if (modal) {
+                modal.classList.remove('hidden');
+                modal.classList.add('flex');
+            }
+        }
+
+        function closeGroupCountModal() {
+            const modal = document.getElementById('groupCountModal');
+            if (modal) {
+                modal.classList.add('hidden');
+                modal.classList.remove('flex');
+            }
+        }
+
+        function applyCustomGroupCount() {
+            const input = document.getElementById('customCountInput');
+            const count = parseInt(input ? input.value : 4, 10);
+            if (isNaN(count) || count < 2 || count > 16) {
+                showToast('يرجى اختيار عدد مجموعات بين 2 و 16', 'amber');
+                return;
+            }
+            setExactGroupCount(count);
+        }
+
+        function setExactGroupCount(targetCount) {
+            closeGroupCountModal();
+            if (targetCount === groups.length) return;
+
+            if (targetCount > groups.length) {
+                while (groups.length < targetCount) {
+                    addNewGroup();
+                }
+                showToast(`تم زيادة عدد المجموعات إلى ${targetCount} مجموعات! ➕`, 'emerald');
+            } else {
+                // Shrinking: gather excess members from removed groups
+                const excessMembers = [];
+                while (groups.length > targetCount) {
+                    const popped = groups.pop();
+                    GROUP_META.pop();
+                    if (popped && popped.length > 0) {
+                        excessMembers.push(...popped);
+                    }
+                }
+                // Redistribute excess members across remaining groups
+                excessMembers.forEach(member => {
+                    let minGroupIdx = 0;
+                    for (let g = 1; g < groups.length; g++) {
+                        if (groups[g].length < groups[minGroupIdx].length) {
+                            minGroupIdx = g;
+                        }
+                    }
+                    groups[minGroupIdx].push(member);
+                });
+
+                saveToStorage();
+                renderGroups();
+                showToast(`تم ضبط عدد المجموعات إلى ${targetCount} وتوزيع باقي الأعضاء بالتساوي! 🔄`, 'emerald');
+            }
+        }
+
+        function updateBulkDropdownOptions() {
+            const sel = document.getElementById('bulkTargetGroup');
+            if (!sel) return;
+            let options = '<option value="balanced">⚡ توزيع متوازن تلقائي على كل المجموعات</option>';
+            groups.forEach((group, idx) => {
+                const meta = GROUP_META[idx];
+                options += `<option value="${idx}">إضافة الكل إلى ${meta.emoji} ${meta.title}</option>`;
+            });
+            sel.innerHTML = options;
+        }
+
         function openMoveModal(groupIdx, memberId) {
             const member = groups[groupIdx].find(m => m.id === memberId);
             if (!member) return;
@@ -2163,12 +2440,12 @@
 
         function copyAllForWhatsApp() {
             const total = groups.reduce((acc, g) => acc + g.length, 0);
-            let sections = [`📋 *قائمة توزيع المجموعات الأربعة (${total} عضو)*\n━━━━━━━━━━━━━━━`];
-            for (let g = 0; g < 4; g++) {
+            let sections = [`📋 *قائمة توزيع المجموعات والفرق (${total} عضو - ${groups.length} مجموعات)*\n━━━━━━━━━━━━━━━`];
+            for (let g = 0; g < groups.length; g++) {
                 sections.push(formatGroupText(g));
             }
             const fullText = sections.join('\n\n');
-            copyTextToClipboard(fullText, 'تم نسخ المجموعات الأربعة منسقة للواتساب!');
+            copyTextToClipboard(fullText, 'تم نسخ كشف جميع المجموعات منسقاً للواتساب!');
         }
 
         function copyTextToClipboard(text, successMsg) {
@@ -2482,58 +2759,91 @@
         }
 
         // Start App on Load with Server Sync & LocalStorage fallback
-        async function initApp() {
+        async async function initApp() {
             let loaded = false;
 
-            // 1. First attempt to load from Google Sheets (if configured)
-            if (googleSheetsWebhookUrl) {
-                try {
-                    const gRes = await fetch(googleSheetsWebhookUrl);
-                    if (gRes.ok) {
-                        const gData = await gRes.json();
-                        if (gData && Array.isArray(gData.groups) && gData.groups.length === 4) {
-                            applyLoadedData(gData);
-                            localStorage.setItem(STORAGE_KEY, JSON.stringify(gData));
-                            loaded = true;
-                        }
+            // 1. First priority: try server / API endpoint (Vercel or local server)
+            try {
+                const res = await fetch(`${API_BASE}/api/state`, { cache: 'no-store' });
+                if (res.ok) {
+                    const data = await res.json();
+                    if (data && data.exists !== false && Array.isArray(data.groups) && data.groups.length >= 2) {
+                        applyLoadedData(data);
+                        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+                        loaded = true;
                     }
-                } catch(e) {}
-            }
-
-            // 2. Next attempt to load from API endpoint (Vercel or local server)
-            if (!loaded) {
-                try {
-                    const res = await fetch(`${API_BASE}/api/state`, { cache: 'no-store' });
-                    if (res.ok) {
-                        const data = await res.json();
-                        if (data && data.exists !== false && Array.isArray(data.groups) && data.groups.length === 4) {
-                            applyLoadedData(data);
-                            localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-                            loaded = true;
-                        }
-                    }
-                } catch (err) {
-                    // Offline or local server not running; fall through to localStorage
                 }
-            }
+            } catch (err) {}
 
-            // 2. If not loaded from server, try browser LocalStorage
+            // 2. Second priority: Browser LocalStorage
             if (!loaded) {
                 loaded = loadFromStorage();
             }
 
-            // 3. If completely fresh (first time opening the app)
+            // 3. Fallback: load Embedded Master Data (contains all 84 members)
             if (!loaded) {
-                initDefaultGroups();
-            } else {
-                renderGroups();
-                updateSaveIndicator();
+                applyLoadedData(EMBEDDED_MASTER_DATA);
+                saveToStorage();
             }
+
+            renderGroups();
+            updateSaveIndicator();
         }
 
         window.onload = function () {
             initApp();
         };
     </script>
+
+    <!-- Modal: Group Count Selector -->
+    <div id="groupCountModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4 no-print">
+        <div class="bg-white dark:bg-darkCard border border-slate-200 dark:border-white/15 rounded-3xl max-w-sm w-full p-6 shadow-2xl animate-card text-center">
+            <div class="w-12 h-12 rounded-2xl bg-brandTeal/15 text-brandTeal dark:text-brandTealLight flex items-center justify-center text-xl mx-auto mb-3">
+                <i class="fa-solid fa-layer-group"></i>
+            </div>
+            <h3 class="font-black text-lg text-slate-900 dark:text-white mb-1">تحديد عدد المجموعات والفرق</h3>
+            <p class="text-xs text-slate-500 dark:text-slate-400 mb-5 leading-relaxed">
+                اختر عدد المجموعات المطلوب تقسيم الأعضاء عليها (من 2 إلى 12 مجموعة). كحد أقصى تظهر 4 مجموعات في الصف الواحد ثم تنزل لأسفل تلقائياً.
+            </p>
+
+            <div class="grid grid-cols-4 gap-2 mb-5" id="groupCountPresets">
+                <!-- Preset buttons populated via JS -->
+            </div>
+
+            <div class="flex items-center gap-2 mb-5 p-3 rounded-2xl bg-slate-100 dark:bg-darkBg border border-slate-200 dark:border-white/10">
+                <span class="text-xs font-bold text-slate-600 dark:text-slate-300">عدد مخصص:</span>
+                <input type="number" id="customCountInput" min="2" max="16" value="4" class="w-16 px-2 py-1.5 rounded-xl text-center font-black text-sm bg-white dark:bg-slate-800 border border-slate-300 dark:border-white/15 text-slate-900 dark:text-white focus:outline-none focus:border-brandTeal">
+                <button onclick="applyCustomGroupCount()" class="flex-1 py-1.5 px-3 rounded-xl bg-brandTeal hover:bg-teal-600 text-white font-bold text-xs shadow-md transition-all">تطبيق</button>
+            </div>
+
+            <button onclick="closeGroupCountModal()" class="w-full py-2.5 rounded-xl font-bold text-xs bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">إلغاء</button>
+        </div>
+    </div>
+
+    <!-- Modal: Delete Group Confirmation -->
+    <div id="confirmDeleteGroupModal" class="fixed inset-0 z-50 hidden items-center justify-center bg-black/75 backdrop-blur-sm p-4 no-print">
+        <div class="bg-white dark:bg-darkCard border border-rose-500/30 rounded-3xl max-w-sm w-full p-6 shadow-2xl animate-card text-center">
+            <div class="w-12 h-12 rounded-2xl bg-rose-500/15 text-rose-500 flex items-center justify-center text-xl mx-auto mb-3">
+                <i class="fa-solid fa-triangle-exclamation"></i>
+            </div>
+            <h3 class="font-black text-lg text-slate-900 dark:text-white mb-2" id="deleteGroupModalTitle">حذف المجموعة</h3>
+            <p class="text-xs text-slate-600 dark:text-slate-400 mb-6 leading-relaxed" id="deleteGroupModalMessage">
+                تحتوي هذه المجموعة على أعضاء. ماذا ترغب أن تفعل بأعضائها؟
+            </p>
+            <div class="space-y-2.5">
+                <button onclick="confirmDeleteGroupAction('redistribute')" class="w-full py-3 rounded-xl font-black text-xs bg-brandTeal hover:bg-teal-600 text-white shadow-lg flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-shuffle"></i>
+                    <span>توزيع الأعضاء بالتساوي على باقي الفرق (مستحسن)</span>
+                </button>
+                <button onclick="confirmDeleteGroupAction('delete')" class="w-full py-2.5 rounded-xl font-black text-xs bg-rose-500/15 hover:bg-rose-500/25 text-rose-600 dark:text-rose-400 border border-rose-500/30">
+                    حذف المجموعة مع أعضائها نهائياً
+                </button>
+                <button onclick="closeDeleteGroupModal()" class="w-full py-2.5 rounded-xl font-bold text-xs bg-slate-200 dark:bg-slate-800 text-slate-700 dark:text-slate-300">
+                    إلغاء
+                </button>
+            </div>
+        </div>
+    </div>
+
 </body>
 </html>

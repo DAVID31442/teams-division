@@ -142,7 +142,7 @@
 
     <!-- Scoreboard Cards Bento Grid (4 Teams) -->
     <main class="max-w-7xl w-full mx-auto flex-1 mb-8">
-        <div id="teamsScoreGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div id="teamsScoreGrid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-4 gap-5">
             <!-- Populated dynamically via JS -->
         </div>
     </main>
@@ -257,7 +257,7 @@
         ];
 
         let teams = JSON.parse(JSON.stringify(DEFAULT_TEAMS));
-        let scores = [0, 0, 0, 0];
+        let scores = teams.map(() => 0);
         let soundEnabled = true;
         let manualEditTeamIndex = null;
 
@@ -388,23 +388,44 @@
         }
 
         function applyTeamsData(parsed) {
-            if (Array.isArray(parsed.customTitles)) {
-                parsed.customTitles.forEach((t, i) => { if (t && teams[i]) teams[i].title = t; });
-            }
-            if (Array.isArray(parsed.customEmojis)) {
-                parsed.customEmojis.forEach((e, i) => { if (e && teams[i]) teams[i].emoji = e; });
-            }
-            if (Array.isArray(parsed.groups)) {
-                parsed.groups.forEach((g, i) => {
-                    if (teams[i]) {
-                        teams[i].count = g.length;
-                        const leaders = g.filter(m => m.locked).map(m => m.name);
-                        if (leaders.length > 0) {
-                            teams[i].leaders = leaders.join(' و ');
-                        }
-                    }
-                });
-            }
+            if (!parsed || !Array.isArray(parsed.groups)) return;
+            
+            const PRESET_META = [
+                { title: 'المجموعة الأولى', emoji: '1️⃣', gradient: 'from-teal-600 via-teal-700 to-cyan-800', border: 'border-teal-500/40' },
+                { title: 'المجموعة الثانية', emoji: '2️⃣', gradient: 'from-emerald-600 via-teal-700 to-green-800', border: 'border-emerald-500/40' },
+                { title: 'المجموعة الثالثة', emoji: '3️⃣', gradient: 'from-sky-600 via-cyan-700 to-blue-800', border: 'border-sky-500/40' },
+                { title: 'المجموعة الرابعة', emoji: '4️⃣', gradient: 'from-indigo-600 via-violet-700 to-purple-800', border: 'border-indigo-500/40' },
+                { title: 'المجموعة الخامسة', emoji: '5️⃣', gradient: 'from-amber-600 via-orange-700 to-yellow-800', border: 'border-amber-500/40' },
+                { title: 'المجموعة السادسة', emoji: '6️⃣', gradient: 'from-rose-600 via-pink-700 to-red-800', border: 'border-rose-500/40' },
+                { title: 'المجموعة السابعة', emoji: '7️⃣', gradient: 'from-purple-600 via-fuchsia-700 to-pink-800', border: 'border-purple-500/40' },
+                { title: 'المجموعة الثامنة', emoji: '8️⃣', gradient: 'from-cyan-600 via-teal-700 to-emerald-800', border: 'border-cyan-500/40' },
+                { title: 'المجموعة التاسعة', emoji: '9️⃣', gradient: 'from-lime-600 via-emerald-700 to-green-800', border: 'border-lime-500/40' },
+                { title: 'المجموعة العاشرة', emoji: '🔟', gradient: 'from-blue-600 via-indigo-700 to-violet-800', border: 'border-blue-500/40' }
+            ];
+
+            teams = parsed.groups.map((g, i) => {
+                const preset = PRESET_META[i] || {
+                    title: `المجموعة ${i + 1}`,
+                    emoji: `${i + 1}️⃣`,
+                    gradient: 'from-teal-600 via-cyan-700 to-blue-800',
+                    border: 'border-teal-500/40'
+                };
+                const title = (parsed.customTitles && parsed.customTitles[i]) || preset.title;
+                const emoji = (parsed.customEmojis && parsed.customEmojis[i]) || preset.emoji;
+                const leaders = g.filter(m => m.locked).map(m => m.name).join(' و ');
+                return {
+                    title,
+                    emoji,
+                    gradient: preset.gradient,
+                    border: preset.border,
+                    leaders: leaders || 'بدون قائد محدد',
+                    count: g.length
+                };
+            });
+
+            // Adjust scores array length
+            while (scores.length < teams.length) scores.push(0);
+            if (scores.length > teams.length) scores = scores.slice(0, teams.length);
         }
 
         function saveScores() {
@@ -426,8 +447,8 @@
         // ==========================================
         function getRanks() {
             // Rank with ties support
-            const sortedIndices = [0, 1, 2, 3].sort((a, b) => scores[b] - scores[a]);
-            const ranks = new Array(4);
+            const sortedIndices = teams.map((_, idx) => idx).sort((a, b) => scores[b] - scores[a]);
+            const ranks = new Array(teams.length);
             let currentRank = 1;
 
             for (let i = 0; i < sortedIndices.length; i++) {

@@ -1,4 +1,17 @@
+import fs from 'fs';
+import path from 'path';
+
 let memoryData = null;
+
+function getDefaultState() {
+    try {
+        const defaultPath = path.join(process.cwd(), 'api', 'default_state.json');
+        if (fs.existsSync(defaultPath)) {
+            return JSON.parse(fs.readFileSync(defaultPath, 'utf8'));
+        }
+    } catch (e) {}
+    return null;
+}
 
 export default function handler(req, res) {
     res.setHeader('Access-Control-Allow-Origin', '*');
@@ -13,12 +26,15 @@ export default function handler(req, res) {
         try {
             memoryData = typeof req.body === 'string' ? JSON.parse(req.body) : req.body;
             return res.status(200).json({ success: true, timestamp: Date.now() });
-        } catch(e) {
+        } catch (e) {
             return res.status(400).json({ error: e.message });
         }
     }
 
     if (req.method === 'GET') {
+        if (!memoryData) {
+            memoryData = getDefaultState();
+        }
         if (memoryData) return res.status(200).json(memoryData);
         return res.status(200).json({ exists: false });
     }
