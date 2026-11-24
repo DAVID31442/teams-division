@@ -1053,6 +1053,7 @@
         ];
 
         // Embedded initial master data for instant zero-server rendering
+        const DEFAULT_GROUP_META = PRESET_GROUP_META;
         const EMBEDDED_MASTER_DATA = {"groups":[[{"id":3,"name":"ماريا مجدي","locked":false},{"id":8,"name":"يوستينا نبيل","locked":false},{"id":9,"name":"جيسيكا بركه","locked":false},{"id":14,"name":"ساندرا عماد","locked":false},{"id":22,"name":"مينا جوزيف","locked":false},{"id":25,"name":"يسي كميل","locked":false},{"id":30,"name":"مارفيل شنوده","locked":false},{"id":34,"name":"يوستنيا هاني","locked":false},{"id":37,"name":"كيرلس اسحاق","locked":false},{"id":42,"name":"جورج يسري","locked":false},{"id":52,"name":"مريم بولس","locked":false},{"id":54,"name":"ندي عاطف","locked":false},{"id":59,"name":"ليزا عصام","locked":false},{"id":63,"name":"كيرلس ايهاب","locked":false},{"id":67,"name":"بولا ايمن","locked":false},{"id":72,"name":"جورج ....مع مكاريوس","locked":false},{"id":76,"name":"يؤنا صحي","locked":false},{"id":77,"name":"اغابي رافت","locked":false},{"id":81,"name":"ميرنا مجدي","locked":false},{"id":18,"name":"توني حكه","locked":false},{"id":49,"name":"ميرنا حاتم","locked":false}],[{"id":1,"name":"ابرام ناصر","locked":false},{"id":6,"name":"ناردين عزت","locked":false},{"id":11,"name":"عماد ايمن","locked":false},{"id":13,"name":"دميانة سمير","locked":false},{"id":17,"name":"دينا ملك","locked":false},{"id":21,"name":"يوستينا مينا","locked":false},{"id":26,"name":"سارة نشأت","locked":false},{"id":32,"name":"رانيا عماد","locked":false},{"id":33,"name":"توني كينفال","locked":false},{"id":39,"name":"فادي جاسر","locked":false},{"id":44,"name":"دميانة ميلاد","locked":false},{"id":48,"name":"رومينا مينا","locked":false},{"id":50,"name":"كرستين سامح","locked":false},{"id":56,"name":"مريم نسيم","locked":false},{"id":60,"name":"مادونا شاكر","locked":false},{"id":61,"name":"يسي ونيس","locked":false},{"id":65,"name":"ابانوب شريف","locked":false},{"id":71,"name":"باسم .....مع مكاريوس","locked":false},{"id":75,"name":"نوسة اشرف","locked":false},{"id":80,"name":"ايلاريا غطاس","locked":false},{"id":84,"name":"روفا","locked":false}],[{"id":2,"name":"البير سامي","locked":false},{"id":7,"name":"ايريني ماجد","locked":false},{"id":12,"name":"ايريني نصر الله","locked":false},{"id":15,"name":"فادي نبيل","locked":false},{"id":20,"name":"سارة سعد","locked":false},{"id":24,"name":"كيرلس سامح","locked":false},{"id":27,"name":"بولا رأفت","locked":false},{"id":31,"name":"مينا ايليا","locked":false},{"id":36,"name":"ديفيد جرجس","locked":false},{"id":40,"name":"جاد","locked":false},{"id":41,"name":"بافلي القمص","locked":false},{"id":45,"name":"مارلين مجدي","locked":false},{"id":55,"name":"مهرائيل عماد","locked":false},{"id":58,"name":"متي عطية","locked":false},{"id":64,"name":"توماس منير","locked":false},{"id":68,"name":"كيرلس طارق","locked":false},{"id":69,"name":"بيتر سعيد","locked":false},{"id":74,"name":"نانسي زاهر","locked":false},{"id":78,"name":"يوليانة مجدي","locked":false},{"id":82,"name":"مريم مفاجأة","locked":false},{"id":47,"name":"مايفل عماد","locked":false}],[{"id":10,"name":"مارينا وليد","locked":false},{"id":4,"name":"مرثا عادل","locked":false},{"id":5,"name":"مريم عادل","locked":false},{"id":16,"name":"مكاريوس مؤنس","locked":false},{"id":19,"name":"مارينا مفرح","locked":false},{"id":23,"name":"جوسي القمص تيموثاوس","locked":false},{"id":28,"name":"مينا يوسف","locked":false},{"id":29,"name":"يؤنا ثروت","locked":false},{"id":35,"name":"كيرلس فوزي","locked":false},{"id":38,"name":"مايكل سامي","locked":false},{"id":43,"name":"فام لوقا","locked":false},{"id":46,"name":"مريم صفوت","locked":false},{"id":51,"name":"مارينا عطاالله","locked":false},{"id":53,"name":"جيسيكا امير","locked":false},{"id":57,"name":"جرجس صبحي","locked":false},{"id":62,"name":"انطونيوس ملاك","locked":false},{"id":66,"name":"لوجي مكاري","locked":false},{"id":70,"name":"جرجس علاء","locked":false},{"id":73,"name":"اردينا عادل","locked":false},{"id":79,"name":"سالي كروميل","locked":false},{"id":83,"name":"كرستينا عادل","locked":false}]],"nextId":85,"customTitles":["المجموعة الأولى","المجموعة الثانية","المجموعة الثالثة","المجموعة الرابعة"],"customEmojis":["1️⃣","2️⃣","3️⃣","4️⃣"],"hasCustomData":true,"savedAt":"2026-11-23T22:23:19.550Z"};
 
         let GROUP_META = PRESET_GROUP_META.slice(0, 4);
@@ -2279,9 +2280,6 @@
             saveToStorage();
             showToast('تم إرسال أمر التحديث لقاعدة البيانات!', 'emerald');
             if (statusText) statusText.textContent = 'آخر مزامنة: الآن';
-        } else {
-                showToast('تم إلغاء تفعيل مزامنة Google Sheets', 'teal');
-            }
         }
 
         // ==========================================
@@ -2759,7 +2757,7 @@
         }
 
         // Start App on Load with Server Sync & LocalStorage fallback
-        async async function initApp() {
+        async function initApp() {
             let loaded = false;
 
             // 1. First priority: try server / API endpoint (Vercel or local server)
